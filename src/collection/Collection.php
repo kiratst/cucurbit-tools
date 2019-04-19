@@ -3,14 +3,20 @@
 namespace Cucurbit\Tools\Collection;
 
 use ArrayAccess;
-use Cucurbit\Tools\Collection\Interfaces\Arrayable;
+use Cucurbit\Tools\Common\Interfaces\Arrayable;
+use Cucurbit\Tools\Common\Traits\ArrayAttributeTrait;
 
+/**
+ * Class Collection
+ */
 class Collection implements ArrayAccess, Arrayable
 {
+	use ArrayAttributeTrait;
+
 	/**
 	 * @var array
 	 */
-	protected $data = [];
+	public $data = [];
 
 	/**
 	 * Collection constructor.
@@ -153,48 +159,6 @@ class Collection implements ArrayAccess, Arrayable
 	public function count()
 	{
 		return \count($this->data);
-	}
-
-	/**
-	 * @param mixed $key
-	 * @return bool
-	 */
-	public function offsetExists($key)
-	{
-		return array_key_exists($key, $this->data);
-	}
-
-	/**
-	 * @param mixed $key
-	 * @return mixed
-	 */
-	public function offsetGet($key)
-	{
-		return $this->data[$key];
-	}
-
-	/**
-	 * @param mixed $key
-	 * @param mixed $value
-	 * @return void
-	 */
-	public function offsetSet($key, $value)
-	{
-		if ($key === null) {
-			$this->data[] = $value;
-		}
-		else {
-			$this->data[$key] = $value;
-		}
-	}
-
-	/**
-	 * @param string $key
-	 * @return void
-	 */
-	public function offsetUnset($key)
-	{
-		unset($this->data[$key]);
 	}
 
 	/**

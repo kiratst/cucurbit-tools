@@ -1,7 +1,12 @@
 <?php
 
-namespace Cucurbit\Tools\Collection\Interfaces;
+namespace Cucurbit\Tools\Common\Interfaces;
 
+/**
+ * interface Arrayable
+ *
+ * @package Cucurbit\Tools\Common\Interfaces
+ */
 interface Arrayable
 {
 	/**
