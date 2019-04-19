@@ -1,0 +1,20 @@
+{
+    "name": "cucurbit/tools",
+	"description": "cucurbit tools",
+    "authors": [
+        {
+            "name": "lpt",
+            "email": "kiratst@163.com"
+        }
+    ],
+	"minimum-stability": "dev",
+    "require": {},
+	"autoload": {
+		"psr-4": {
+			"Cucurbit\\Tools\\": "src/"
+		}
+	},
+	"config": {
+		"preferred-install": "dist"
+	}
+}
