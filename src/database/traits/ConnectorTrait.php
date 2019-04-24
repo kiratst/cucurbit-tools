@@ -60,34 +60,37 @@ trait ConnectorTrait
 	/**
 	 * @var PDO
 	 */
-	protected static $pdo;
+	private $pdo;
+
+	/**
+	 * @var null|static
+	 */
+	protected static $connection;
 
 	/**
 	 * create database connection
 	 *
-	 * @return PDO
-	 * @throws ConnectionException
 	 */
 	public function connect()
 	{
-		if (static::$pdo instanceof static) {
-			return static::$pdo;
+		if (!static::$connection instanceof static) {
+			static::$connection = new static();
 		}
 
-		$this->parseConfig();
-		return $this->initPdo();
+		return static::$connection;
 	}
 
 	/**
 	 * create pdo instance
 	 *
-	 * @return PDO
+	 * @return static
 	 * @throws ConnectionException
 	 */
 	protected function initPdo()
 	{
 		try {
-			return new PDO($this->getDsn(), $this->username, $this->password, $this->options);
+			$this->pdo = new PDO($this->getDsn(), $this->username, $this->password, $this->options);
+			return $this;
 		} catch (\Throwable $e) {
 			throw new ConnectionException($e->getMessage());
 		}
@@ -132,7 +135,7 @@ trait ConnectorTrait
 		}
 
 		if (empty($config['database'])) {
-			throw new ConnectionException('Database database is empty');
+			throw new ConnectionException('Database name is empty');
 		}
 
 		$this->host     = $config['host'];
@@ -141,9 +144,12 @@ trait ConnectorTrait
 		$this->username = empty($config['username']) ? 'root' : $config['username'];
 		$this->password = empty($config['password']) ? 'root' : $config['password'];
 		$this->charset  = empty($config['charset']) ? 'utf8' : $config['charset'];
-		$this->prefix   = empty($config['charset']) ? '' : $config['charset'];
+		$this->prefix   = empty($config['prefix']) ? '' : $config['prefix'];
 	}
 
+	/**
+	 * prevent clone
+	 */
 	private function __clone()
 	{
 	}

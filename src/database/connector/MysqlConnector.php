@@ -7,7 +7,7 @@ use PDO;
 final class MysqlConnector extends Connector
 {
 	/**
-	 * @return PDO
+	 * @return MysqlConnector
 	 * @throws ConnectionException
 	 */
 	public function createConnection()
