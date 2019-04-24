@@ -3,6 +3,8 @@
 namespace Cucurbit\Tools\Database\Connection;
 
 use Cucurbit\Tools\Database\Connection\Interfaces\ConnectionInterface;
+use Cucurbit\Tools\Database\Connector\Connector;
+use Cucurbit\Tools\Database\Connector\ConnectorInterface;
 use PDO;
 
 class Connection implements ConnectionInterface
@@ -20,7 +22,7 @@ class Connection implements ConnectionInterface
 	/**
 	 * @var string
 	 */
-	protected $table_prefix = '';
+	protected $tablePrefix = '';
 
 	/**
 	 * @var array
@@ -31,7 +33,19 @@ class Connection implements ConnectionInterface
 	 * fetch mode
 	 * @var int
 	 */
-	protected $fetch_mode = PDO::FETCH_OBJ;
+	protected $fetchMode = PDO::FETCH_OBJ;
+
+	/**
+	 * Connection constructor.
+	 * @param Connector $connector
+	 */
+	public function __construct($connector)
+	{
+		$this->pdo         = $connector->pdo;
+		$this->database    = $connector->database;
+		$this->tablePrefix = $connector->prefix;
+	}
+
 
 	/**
 	 * @param string $table

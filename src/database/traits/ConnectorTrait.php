@@ -60,7 +60,7 @@ trait ConnectorTrait
 	/**
 	 * @var PDO
 	 */
-	private $pdo;
+	protected $pdo;
 
 	/**
 	 * @var null|static
