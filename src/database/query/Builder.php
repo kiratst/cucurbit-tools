@@ -2,7 +2,7 @@
 
 namespace Cucurbit\Tools\Database\Query;
 
-use Closure;
+use Cucurbit\Tools\Database\Traits\WhereTrait;
 use InvalidArgumentException;
 
 /**
@@ -10,6 +10,11 @@ use InvalidArgumentException;
  */
 class Builder
 {
+	use WhereTrait;
+
+	/**
+	 * @var Connection
+	 */
 	public $connection;
 
 	/**
@@ -105,85 +110,6 @@ class Builder
 		return $this;
 	}
 
-	/**
-	 * set where conditions
-	 *
-	 * @param string|array $column
-	 * @param mixed        $operator
-	 * @param mixed        $value
-	 * @param string       $expression
-	 * @return Builder
-	 */
-	public function where($column, $operator = null, $value = null, $expression = 'and')
-	{
-		if (\is_array($column)) {
-			return $this->convertArrayWhere($column, $expression);
-		}
-
-		if ($column instanceof Closure) {
-			return;
-		}
-
-		if (!$this->validOperator($operator)) {
-			list($value, $operator) = [$operator, '='];
-		}
-
-		if ($value === null) {
-			return $this->whereNull($column, $expression);
-		}
-
-		if (\is_array($value)) {
-			$value = $value[0];
-		}
-
-		$this->wheres[] = compact('column', 'operator', 'value', 'expression');
-		$this->addBindings($value);
-
-		return $this;
-	}
-
-	/**
-	 * where or
-	 *
-	 * @param string|array|Closure $column
-	 * @param mixed                $operator
-	 * @param mixed                $value
-	 * @return Builder
-	 */
-	public function whereOr($column, $operator = null, $value = null)
-	{
-		return $this->where($column, $operator, $value, $expression = 'or');
-	}
-
-	/**
-	 * where is null
-	 *
-	 * @param string $column
-	 * @param string $expression
-	 * @param bool   $not_null
-	 * @return $this
-	 */
-	public function whereNull($column, $expression = 'and', $not_null = false)
-	{
-		$type = $not_null ? 'NotNull' : 'Null';
-
-		$this->wheres[] = compact('type', 'column', 'expression');
-
-		return $this;
-	}
-
-	/**
-	 * where not null
-	 *
-	 * @param string $column
-	 * @param string $expression
-	 * @return Builder
-	 */
-	public function whereNotNull($column, $expression = 'and')
-	{
-		return $this->whereNull($column, $expression, true);
-	}
-
 	public function groupBy()
 	{
 
@@ -194,8 +120,15 @@ class Builder
 
 	}
 
-	public function get()
+	public function get($columns = ['*'])
 	{
+		$origin = $this->columns;
+
+		if ($origin === null) {
+			$this->columns = $origin;
+		}
+
+		$result = $this->runSql();
 
 	}
 
@@ -241,33 +174,15 @@ class Builder
 
 	public function toSql()
 	{
+		dd($this);
 
+
+		return $this;
 	}
 
 	public function runSql()
 	{
-
-	}
-
-	/**
-	 * convert columns and add wheres
-	 *
-	 * @param array  $columns
-	 * @param string $expression
-	 * @return $this
-	 */
-	protected function convertArrayWhere($columns, $expression = 'and')
-	{
-		foreach ($columns as $column => $value) {
-			if (is_numeric($column) && \is_array($value)) {
-				$this->where(...array_values($value));
-			}
-			else {
-				$this->where($column, '=', $value, $expression);
-			}
-		}
-
-		return $this;
+		return $this->connection->all($this->toSql(), $this->bindings);
 	}
 
 	/**
@@ -304,8 +219,7 @@ class Builder
 
 		if (\is_array($value)) {
 			$this->bindings[$type][] = array_values(array_merge($this->bindings[$type], $value));
-		}
-		else {
+		} else {
 			$this->bindings[$type][] = $value;
 		}
 

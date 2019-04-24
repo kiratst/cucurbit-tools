@@ -1,13 +1,13 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Interfaces;
+namespace Cucurbit\Tools\Database\Connection\Interfaces;
 
 /**
- * Interface QueryInterface
+ * Interface ConnectionInterface
  *
  * @package Cucurbit\Tools\Database\Interfaces
  */
-interface QueryInterface
+interface ConnectionInterface
 {
 	/**
 	 * init database table
@@ -33,7 +33,7 @@ interface QueryInterface
 	 * @param array  $bindings
 	 * @return mixed
 	 */
-	public function select($query, $bindings = []);
+	public function all($query, $bindings = []);
 
 	/**
 	 * insert data
