@@ -13,56 +13,6 @@ use PDO;
 trait ConnectorTrait
 {
 	/**
-	 * @var string
-	 */
-	public $host;
-
-	/**
-	 * @var string
-	 */
-	public $database;
-
-	/**
-	 * @var string
-	 */
-	public $username;
-
-	/**
-	 * @var string
-	 */
-	public $password;
-
-	/**
-	 * @var string|int
-	 */
-	public $port = 3306;
-
-	/**
-	 * @var string
-	 */
-	public $charset = 'utf8';
-
-	/**
-	 * @var string
-	 */
-	public $prefix = '';
-
-	/**
-	 * @var array
-	 */
-	public $options = [];
-
-	/**
-	 * @var string
-	 */
-	protected $driver = 'mysql';
-
-	/**
-	 * @var PDO
-	 */
-	protected $pdo;
-
-	/**
 	 * @var null|static
 	 */
 	protected static $connection;
@@ -83,21 +33,20 @@ trait ConnectorTrait
 	/**
 	 * create pdo instance
 	 *
-	 * @return static
+	 * @return PDO
 	 * @throws ConnectionException
 	 */
 	protected function initPdo()
 	{
 		try {
-			$this->pdo = new PDO($this->getDsn(), $this->username, $this->password, $this->options);
-			return $this;
+			return new PDO($this->getDsn(), $this->username, $this->password, $this->options);
 		} catch (\Throwable $e) {
 			throw new ConnectionException($e->getMessage());
 		}
 	}
 
 	/**
-	 * get dsn
+	 * get dsn default mysql driver
 	 *
 	 * @return string
 	 */
@@ -147,10 +96,4 @@ trait ConnectorTrait
 		$this->prefix   = empty($config['prefix']) ? '' : $config['prefix'];
 	}
 
-	/**
-	 * prevent clone
-	 */
-	private function __clone()
-	{
-	}
 }

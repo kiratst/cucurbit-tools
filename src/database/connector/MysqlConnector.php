@@ -3,18 +3,21 @@
 namespace Cucurbit\Tools\Database\Connector;
 
 use PDO;
+use Throwable;
 
-final class MysqlConnector extends Connector
+class MysqlConnector extends Connector
 {
 	/**
-	 * @return MysqlConnector
+	 * Connector constructor.
+	 *
 	 * @throws ConnectionException
 	 */
-	public function createConnection()
+	public function __construct()
 	{
 		try {
-			return $this->connect();
-		} catch (\Throwable $e) {
+			$this->parseConfig();
+			$this->pdo = $this->initPdo();
+		} catch (Throwable $e) {
 			throw new ConnectionException($e->getMessage());
 		}
 	}

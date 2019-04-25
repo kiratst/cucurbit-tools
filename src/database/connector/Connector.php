@@ -4,25 +4,67 @@ namespace Cucurbit\Tools\Database\Connector;
 
 use Cucurbit\Tools\Database\Traits\ConfigTrait;
 use Cucurbit\Tools\Database\Traits\ConnectorTrait;
-use Throwable;
+use PDO;
 
-class Connector implements ConnectorInterface
+abstract class Connector implements ConnectorInterface
 {
 	use ConnectorTrait, ConfigTrait;
 
 	/**
-	 * Connector constructor.
-	 *
-	 * @throws ConnectionException
+	 * @var string
 	 */
-	public function __construct()
+	public $host;
+
+	/**
+	 * @var string
+	 */
+	public $database;
+
+	/**
+	 * @var string
+	 */
+	public $username;
+
+	/**
+	 * @var string
+	 */
+	public $password;
+
+	/**
+	 * @var string|int
+	 */
+	public $port = 3306;
+
+	/**
+	 * @var string
+	 */
+	public $charset = 'utf8';
+
+	/**
+	 * @var string
+	 */
+	public $prefix = '';
+
+	/**
+	 * @var array
+	 */
+	public $options = [];
+
+	/**
+	 * @var string
+	 */
+	protected $driver = 'mysql';
+
+	/**
+	 * @var PDO
+	 */
+	protected $pdo;
+
+	/**
+	 * prevent clone
+	 */
+	private function __clone()
 	{
-		try {
-			$this->parseConfig();
-			$this->pdo = $this->initPdo();
-		} catch (Throwable $e) {
-			throw new ConnectionException($e->getMessage());
-		}
 	}
 
 	/**
