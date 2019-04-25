@@ -85,4 +85,12 @@ class Connection implements ConnectionInterface
 	{
 		return new Builder($this);
 	}
+
+	/**
+	 * @return PDO
+	 */
+	public function getPdo()
+	{
+		return $this->pdo;
+	}
 }

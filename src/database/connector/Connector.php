@@ -58,7 +58,7 @@ abstract class Connector implements ConnectorInterface
 	/**
 	 * @var PDO
 	 */
-	protected $pdo;
+	public $pdo;
 
 	/**
 	 * prevent clone
