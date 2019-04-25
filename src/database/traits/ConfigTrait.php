@@ -4,6 +4,10 @@ namespace Cucurbit\Tools\Database\Traits;
 
 use Cucurbit\Tools\Database\Connector\ConnectionException;
 
+/**
+ *
+ * @package Cucurbit\Tools\Database\Traits
+ */
 trait ConfigTrait
 {
 	/**

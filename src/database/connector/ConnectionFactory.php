@@ -53,5 +53,4 @@ class ConnectionFactory
 
 		return \call_user_func_array([static::$instance, $methods], $arguments);
 	}
-
 }
