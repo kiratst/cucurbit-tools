@@ -34,6 +34,7 @@ trait QueryTrait
 	 */
 	protected function bindValues($statement, $bindings)
 	{
+
 		foreach ($bindings as $key => $value) {
 			$statement->bindValue(
 				\is_string($key) ? $key : $key + 1,
