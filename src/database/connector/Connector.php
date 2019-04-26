@@ -48,7 +48,9 @@ abstract class Connector implements ConnectorInterface
 	/**
 	 * @var array
 	 */
-	public $options = [];
+	public $options = [
+		PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+	];
 
 	/**
 	 * @var string

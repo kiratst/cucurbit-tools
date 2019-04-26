@@ -10,14 +10,6 @@ namespace Cucurbit\Tools\Database\Connection\Interfaces;
 interface ConnectionInterface
 {
 	/**
-	 * init database table
-	 *
-	 * @param string $table
-	 * @return mixed
-	 */
-	public function table($table);
-
-	/**
 	 * run statement and return one result
 	 *
 	 * @param string $query

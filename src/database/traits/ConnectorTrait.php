@@ -18,6 +18,11 @@ trait ConnectorTrait
 	protected static $connection;
 
 	/**
+	 * @var PDO
+	 */
+	public $pdo;
+
+	/**
 	 * create database connection
 	 *
 	 */

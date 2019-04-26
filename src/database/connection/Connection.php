@@ -3,12 +3,15 @@
 namespace Cucurbit\Tools\Database\Connection;
 
 use Cucurbit\Tools\Database\Connection\Interfaces\ConnectionInterface;
+use Cucurbit\Tools\Database\Connection\Traits\QueryTrait;
 use Cucurbit\Tools\Database\Connector\Connector;
 use Cucurbit\Tools\Database\Connector\ConnectorInterface;
 use PDO;
 
 class Connection implements ConnectionInterface
 {
+	use QueryTrait;
+
 	/**
 	 * @var PDO
 	 */
@@ -30,12 +33,6 @@ class Connection implements ConnectionInterface
 	protected $config = [];
 
 	/**
-	 * fetch mode
-	 * @var int
-	 */
-	protected $fetchMode = PDO::FETCH_OBJ;
-
-	/**
 	 * Connection constructor.
 	 * @param Connector $connector
 	 */
@@ -46,51 +43,72 @@ class Connection implements ConnectionInterface
 		$this->tablePrefix = $connector->prefix;
 	}
 
-
 	/**
-	 * @param string $table
-	 * @return Builder|mixed
+	 * run statement and get one result
+	 *
+	 * @param string $sql
+	 * @param array  $bindings
+	 * @return mixed
 	 */
-	public function table($table)
+	public function one($sql, $bindings = [])
 	{
-		return $this->builder()->table($table);
-	}
+		$result = $this->all($sql, $bindings);
 
-	public function one($query, $bindings = [])
-	{
-
-	}
-
-	public function all($query, $bindings = [])
-	{
-
-	}
-
-	public function insert($query, $bindings = [])
-	{
-	}
-
-	public function update($query, $bindings = [])
-	{
-	}
-
-	public function delete($query, $bindings = [])
-	{
+		return array_shift($result);
 	}
 
 	/**
-	 * @return Builder
+	 * run statement and get result
+	 *
+	 * @param string $sql
+	 * @param array  $bindings
+	 * @return mixed
 	 */
-	public function builder()
+	public function all($sql, $bindings = [])
 	{
-		return new Builder($this);
+		return $this->execSql($sql, $bindings, function ($sql, $bindings) {
+			return $this->execStatement($sql, $bindings)
+				->fetchAll();
+		});
+
 	}
 
 	/**
-	 * @return PDO
+	 * run insert sql
+	 *
+	 * @param string $sql
+	 * @param array  $bindings
+	 * @return mixed|void
 	 */
-	public function getPdo()
+	public function insert($sql, $bindings = [])
 	{
-		return $this->pdo;
+		return $this->execSql($sql, $bindings, function ($sql, $bindings) {
+			return $this->execStatement($sql, $bindings, false);
+		});
 	}
+
+	/**
+	 * run update sql and return the affected rows count
+	 *
+	 * @param string $sql
+	 * @param array  $bindings
+	 * @return int|mixed
+	 */
+	public function update($sql, $bindings = [])
+	{
+		return $this->affectedRows($sql, $bindings);
+	}
+
+	/**
+	 * run delete sql and return the affected rows count
+	 *
+	 * @param string $sql
+	 * @param array  $bindings
+	 * @return int|mixed
+	 */
+	public function delete($sql, $bindings = [])
+	{
+		return $this->affectedRows($sql, $bindings);
+	}
+
 }
