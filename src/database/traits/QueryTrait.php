@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Connection\Traits;
+namespace Cucurbit\Tools\Database\Traits;
 
 use PDO;
 use PDOStatement;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Connection\Interfaces;
+namespace Cucurbit\Tools\Database\Connection;
 
 /**
  * Interface ConnectionInterface

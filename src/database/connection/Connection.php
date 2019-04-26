@@ -2,10 +2,8 @@
 
 namespace Cucurbit\Tools\Database\Connection;
 
-use Cucurbit\Tools\Database\Connection\Interfaces\ConnectionInterface;
-use Cucurbit\Tools\Database\Connection\Traits\QueryTrait;
 use Cucurbit\Tools\Database\Connector\Connector;
-use Cucurbit\Tools\Database\Connector\ConnectorInterface;
+use Cucurbit\Tools\Database\Traits\QueryTrait;
 use PDO;
 
 class Connection implements ConnectionInterface

@@ -1,14 +1,15 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Query;
+namespace Cucurbit\Tools\Database\Builder;
 
+use Cucurbit\Tools\Database\Connection\Connection;
 use Cucurbit\Tools\Database\Traits\WhereTrait;
 use InvalidArgumentException;
 
 /**
  * Builder the sql
  */
-class Builder
+class Builder implements BuilderInterface
 {
 	use WhereTrait;
 
@@ -182,6 +183,8 @@ class Builder
 
 	public function runSql()
 	{
+		$this->toSql();
+
 		return $this->connection->all($this->toSql(), $this->bindings);
 	}
 
