@@ -2,7 +2,7 @@
 
 namespace Cucurbit\Tools\Database\Connector;
 
-use Cucurbit\Tools\Database\Resolve\ResolverFactory;
+use Cucurbit\Tools\Database\Resolver\ResolverFactory;
 use PDO;
 use Throwable;
 

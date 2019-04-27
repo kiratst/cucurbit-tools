@@ -3,7 +3,7 @@
 namespace Cucurbit\Tools\Database\Traits;
 
 use Cucurbit\Tools\Database\Connector\ConnectionException;
-use Cucurbit\Tools\Database\Resolve\Resolver;
+use Cucurbit\Tools\Database\Resolver\Resolver;
 use PDO;
 
 /**

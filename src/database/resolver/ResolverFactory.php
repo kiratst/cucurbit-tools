@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Resolve;
+namespace Cucurbit\Tools\Database\Resolver;
 
 use Cucurbit\Tools\Database\Connector\ConnectionException;
 
