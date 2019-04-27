@@ -2,6 +2,7 @@
 
 namespace Cucurbit\Tools\Database\Connector;
 
+use Cucurbit\Tools\Database\Resolve\ResolverFactory;
 use PDO;
 use Throwable;
 
@@ -16,7 +17,8 @@ class MysqlConnector extends Connector
 	{
 		try {
 			$this->parseConfig();
-			$this->pdo = $this->initPdo();
+			$this->pdo      = $this->initPdo();
+			$this->resolver = ResolverFactory::make($this->driver);
 		} catch (Throwable $e) {
 			throw new ConnectionException($e->getMessage());
 		}

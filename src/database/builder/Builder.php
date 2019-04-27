@@ -175,7 +175,7 @@ class Builder implements BuilderInterface
 
 	public function toSql()
 	{
-		dd($this);
+		dd($this->connection->getResolver()->toSql($this));
 
 
 		return $this;

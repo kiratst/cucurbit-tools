@@ -3,6 +3,7 @@
 namespace Cucurbit\Tools\Database\Traits;
 
 use Cucurbit\Tools\Database\Connector\ConnectionException;
+use Cucurbit\Tools\Database\Resolve\Resolver;
 use PDO;
 
 /**
@@ -23,6 +24,11 @@ trait ConnectorTrait
 	public $pdo;
 
 	/**
+	 * @var Resolver
+	 */
+	protected $resolver;
+
+	/**
 	 * create database connection
 	 *
 	 */
@@ -33,6 +39,14 @@ trait ConnectorTrait
 		}
 
 		return static::$connection;
+	}
+
+	/**
+	 * @return Resolver
+	 */
+	public function getResolver()
+	{
+		return $this->resolver;
 	}
 
 	/**

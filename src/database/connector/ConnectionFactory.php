@@ -38,9 +38,10 @@ class ConnectionFactory
 			default:
 			case 'mysql':
 				$connector = new MysqlConnector();
-				self::$connector[$driver] = $connector;
 				break;
 		}
+
+		self::$connector[$driver] = $connector;
 
 		return $connector;
 	}
