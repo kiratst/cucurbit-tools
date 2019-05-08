@@ -4,7 +4,7 @@ namespace Cucurbit\Tools\Database\Connector;
 
 use Cucurbit\Tools\Database\Traits\ConfigTrait;
 
-class ConnectionFactory
+class ConnectorFactory
 {
 	use ConfigTrait;
 

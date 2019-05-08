@@ -27,10 +27,11 @@ class ResolverFactory
 
 	/**
 	 * @param string $type
+	 * @param string $table_prefix
 	 * @return Resolver
 	 * @throws ConnectionException
 	 */
-	protected function make($type = 'mysql')
+	protected function make($type = 'mysql', $table_prefix = '')
 	{
 		$type = strtolower($type);
 
@@ -49,7 +50,7 @@ class ResolverFactory
 				$resolver = new MysqlResolver();
 				break;
 		}
-
+		$resolver->setTablePrefix($table_prefix);
 		self::$resolvers[$type] = $resolver;
 
 		return $resolver;

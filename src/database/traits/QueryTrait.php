@@ -7,7 +7,7 @@ use PDOStatement;
 
 /**
  * Trait Query Trait
- * @package Cucurbit\Tools\Database\Connection\Traits
+ * @package Cucurbit\Tools\Database\Traits
  */
 trait QueryTrait
 {

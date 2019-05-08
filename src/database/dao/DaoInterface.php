@@ -1,13 +1,13 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Connection;
+namespace Cucurbit\Tools\Database\Dao;
 
 /**
  * Interface ConnectionInterface
  *
  * @package Cucurbit\Tools\Database\Interfaces
  */
-interface ConnectionInterface
+interface DaoInterface
 {
 	/**
 	 * run statement and return one result

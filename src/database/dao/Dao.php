@@ -1,12 +1,12 @@
 <?php
 
-namespace Cucurbit\Tools\Database\Connection;
+namespace Cucurbit\Tools\Database\Dao;
 
 use Cucurbit\Tools\Database\Connector\Connector;
 use Cucurbit\Tools\Database\Traits\QueryTrait;
 use PDO;
 
-class Connection implements ConnectionInterface
+class Dao implements DaoInterface
 {
 	use QueryTrait;
 
@@ -31,11 +31,17 @@ class Connection implements ConnectionInterface
 	protected $config = [];
 
 	/**
+	 * @var Connector
+	 */
+	private $connector;
+
+	/**
 	 * Connection constructor.
 	 * @param Connector $connector
 	 */
 	public function __construct($connector)
 	{
+		$this->connector   = $connector;
 		$this->pdo         = $connector->pdo;
 		$this->database    = $connector->database;
 		$this->tablePrefix = $connector->prefix;
@@ -109,4 +115,11 @@ class Connection implements ConnectionInterface
 		return $this->affectedRows($sql, $bindings);
 	}
 
+	/**
+	 * @return Connector
+	 */
+	public function getConnector()
+	{
+		return $this->connector;
+	}
 }

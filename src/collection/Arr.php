@@ -104,9 +104,11 @@ class Arr
 
 		if (self::accessible($data) && self::exists($data, $key)) {
 			$result = $data[$key];
-		} elseif (\is_object($data) && isset($data->{$key})) {
+		}
+		elseif (\is_object($data) && isset($data->{$key})) {
 			$result = $data->{$key};
-		} else {
+		}
+		else {
 			$result = $default;
 		}
 
@@ -128,7 +130,7 @@ class Arr
 	 * retrieve the  key exists
 	 *
 	 * @param ArrayAccess|array $data
-	 * @param string|int         $key
+	 * @param string|int        $key
 	 * @return bool
 	 */
 	public static function exists($data, $key)
@@ -138,5 +140,31 @@ class Arr
 		}
 
 		return array_key_exists($key, $data);
+	}
+
+	/**
+	 * @param array $array
+	 * @param       $depth
+	 * @return array
+	 */
+	public static function flatten($array, $depth = INF)
+	{
+		$result = [];
+
+		foreach ($array as $item) {
+			$item = $item instanceof Collection ? $item->all() : $item;
+
+			if (!\is_array($item)) {
+				$result[] = $item;
+			}
+			elseif ($depth === 1) {
+				$result = array_merge($result, array_values($item));
+			}
+			else {
+				$result = array_merge($result, static::flatten($item, $depth - 1));
+			}
+		}
+
+		return $result;
 	}
 }

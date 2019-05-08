@@ -2,7 +2,8 @@
 
 namespace Cucurbit\Tools\Database\Builder;
 
-use Cucurbit\Tools\Database\Connection\Connection;
+use Cucurbit\Tools\Collection\Arr;
+use Cucurbit\Tools\Database\Dao\Dao;
 use Cucurbit\Tools\Database\Traits\WhereTrait;
 use InvalidArgumentException;
 
@@ -14,14 +15,19 @@ class Builder implements BuilderInterface
 	use WhereTrait;
 
 	/**
-	 * @var Connection
+	 * @var Dao
 	 */
-	public $connection;
+	public $dao;
 
 	/**
 	 * @var string
 	 */
 	public $table;
+
+	/**
+	 * @var bool
+	 */
+	public $distinct;
 
 	/**
 	 * where conditions
@@ -78,11 +84,11 @@ class Builder implements BuilderInterface
 
 	/**
 	 * Builder constructor.
-	 * @param $connection
+	 * @param $dao
 	 */
-	public function __construct($connection)
+	public function __construct($dao)
 	{
-		$this->connection = $connection;
+		$this->dao = $dao;
 	}
 
 	/**
@@ -94,6 +100,13 @@ class Builder implements BuilderInterface
 	public function select($columns = ['*'])
 	{
 		$this->columns = \is_array($columns) ? $columns : \func_get_args();
+
+		return $this;
+	}
+
+	public function distinct()
+	{
+		$this->distinct = true;
 
 		return $this;
 	}
@@ -129,8 +142,7 @@ class Builder implements BuilderInterface
 			$this->columns = $origin;
 		}
 
-		$result = $this->runSql();
-
+		return $this->runSql();
 	}
 
 	public function insert()
@@ -175,17 +187,15 @@ class Builder implements BuilderInterface
 
 	public function toSql()
 	{
-		dd($this->connection->getResolver()->toSql($this));
+		\DB::table('mk_account_front')->where('account_id', '>=', 12)
+			->where('nickname', '=', '123')->limit(1)->get();
 
-
-		return $this;
+		return $this->dao->getConnector()->getResolver()->toSql($this);
 	}
 
 	public function runSql()
 	{
-		$this->toSql();
-
-		return $this->connection->all($this->toSql(), $this->bindings);
+		return $this->dao->all($this->toSql(), $this->getBindings());
 	}
 
 	/**
@@ -204,7 +214,7 @@ class Builder implements BuilderInterface
 	 */
 	protected function newQuery()
 	{
-		return new static($this->connection);
+		return new static($this->dao);
 	}
 
 	/**
@@ -216,16 +226,22 @@ class Builder implements BuilderInterface
 	 */
 	protected function addBindings($value, $type = 'where')
 	{
-		if (!array_key_exists($type, $this->bindings)) {
+		if (!\array_key_exists($type, $this->bindings)) {
 			throw new InvalidArgumentException("Invalid binding type: {$type}.");
 		}
 
 		if (\is_array($value)) {
 			$this->bindings[$type][] = array_values(array_merge($this->bindings[$type], $value));
-		} else {
+		}
+		else {
 			$this->bindings[$type][] = $value;
 		}
 
 		return $this;
+	}
+
+	protected function getBindings()
+	{
+		return Arr::flatten($this->bindings);
 	}
 }

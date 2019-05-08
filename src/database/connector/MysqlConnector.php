@@ -18,7 +18,7 @@ class MysqlConnector extends Connector
 		try {
 			$this->parseConfig();
 			$this->pdo      = $this->initPdo();
-			$this->resolver = ResolverFactory::make($this->driver);
+			$this->resolver = ResolverFactory::make($this->driver, $this->prefix);
 		} catch (Throwable $e) {
 			throw new ConnectionException($e->getMessage());
 		}
