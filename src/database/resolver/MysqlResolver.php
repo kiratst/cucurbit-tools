@@ -21,7 +21,7 @@ class MysqlResolver extends Resolver
 
 	/**
 	 * @param Builder $builder
-	 * @param         $columns
+	 * @param array   $columns
 	 * @return mixed
 	 */
 	protected function resolveColumns($builder, $columns)
@@ -45,6 +45,34 @@ class MysqlResolver extends Resolver
 		}
 
 		return '';
+	}
+
+	/**
+	 * @param Builder $builder
+	 * @param array   $orders
+	 * @return string
+	 */
+	protected function resolveOrders($builder, $orders)
+	{
+		if (!$orders) {
+			return '';
+		}
+
+		$order_sql = array_map(function ($order) {
+			return $order['column'] . ' ' . $order['direction'];
+		}, $orders);
+
+		return 'order by ' . implode(', ', $order_sql);
+	}
+
+	/**
+	 * @param Builder $builder
+	 * @param array   $groups
+	 * @return string
+	 */
+	protected function resolveGroups($builder, $groups)
+	{
+		return 'group by ' . $this->concatenateColumn($groups);
 	}
 
 

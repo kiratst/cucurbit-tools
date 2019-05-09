@@ -57,6 +57,8 @@ class Builder implements BuilderInterface
 	public $limit;
 
 	/**
+	 * the select columns
+	 *
 	 * @var array
 	 */
 	public $columns;
@@ -126,21 +128,35 @@ class Builder implements BuilderInterface
 
 	public function groupBy()
 	{
+		$groups = \func_get_args();
 
+		foreach ($groups as $group) {
+			$group = \is_array($group) ? $group : [$group];
+
+			$this->groups = array_merge((array) $this->groups, $group);
+		}
+
+		return $this;
 	}
 
-	public function orderBy()
+	public function orderBy($column, $direction = 'asc')
 	{
+		$this->orders[] = [
+			'column'    => $column,
+			'direction' => strtolower($direction) === 'asc' ? 'asc' : 'desc',
+		];
 
+		return $this;
+	}
+
+	public function orderByDesc($column)
+	{
+		return $this->orderBy($column, 'desc');
 	}
 
 	public function get($columns = ['*'])
 	{
-		$origin = $this->columns;
-
-		if ($origin === null) {
-			$this->columns = $origin;
-		}
+		$this->columns = !$this->columns ? $columns : $this->columns;
 
 		return $this->runSql();
 	}
@@ -160,14 +176,49 @@ class Builder implements BuilderInterface
 
 	}
 
-	public function find($id)
+	public function limit($limit)
 	{
+		$this->limit = $limit <= 0 ? 1 : $limit;
 
+		return $this;
 	}
 
-	public function first()
+	/**
+	 * get one record by id
+	 *
+	 * @param       $id
+	 * @param array $columns
+	 * @return mixed
+	 */
+	public function find($id, $columns = ['*'])
 	{
+		return $this->where('id', '=', $id)->first($columns);
+	}
 
+	/**
+	 * get first the result
+	 *
+	 * @param array $columns
+	 * @return mixed
+	 */
+	public function first($columns = ['*'])
+	{
+		$this->columns = !$this->columns ? $columns : $this->columns;
+
+		return $this->dao->one($this->limit(1)->toSql(), $this->getBindings());
+	}
+
+	/**
+	 * get column value
+	 *
+	 * @param $column
+	 * @return mixed|null
+	 */
+	public function value($column)
+	{
+		$data = (array) $this->first([$column]);
+
+		return \count($data) ? reset($data) : null;
 	}
 
 	public function sum()
@@ -187,9 +238,6 @@ class Builder implements BuilderInterface
 
 	public function toSql()
 	{
-		\DB::table('mk_account_front')->where('account_id', '>=', 12)
-			->where('nickname', '=', '123')->limit(1)->get();
-
 		return $this->dao->getConnector()->getResolver()->toSql($this);
 	}
 
