@@ -29,11 +29,63 @@ abstract class Resolver implements ResolverInterface
 		return $this;
 	}
 
+	/**
+	 * resolve builder to sql string
+	 *
+	 * @param Builder $builder
+	 * @return mixed|string
+	 */
 	public function toSql(Builder $builder)
 	{
 		return $this->concatenateSql($this->resolveComponents($builder));
 	}
 
+	/**
+	 * resolve delete sql
+	 *
+	 * @param Builder $builder
+	 */
+	public function resolveDelete(Builder $builder)
+	{
+
+	}
+
+	/**
+	 * resolve update
+	 *
+	 * @param Builder $builder
+	 * @param array   $data
+	 */
+	public function resolveUpdate(Builder $builder, array $data)
+	{
+
+	}
+
+	/**
+	 * @param Builder $builder
+	 * @param array   $data
+	 */
+	public function resolveInsert(Builder $builder, array $data)
+	{
+
+	}
+
+	/**
+	 * @param array   $data
+	 * @param Builder $builder
+	 * @return array
+	 */
+	public function prepareBindings(array $data, Builder $builder)
+	{
+		return array_values(array_merge($data, $builder->getBindings()));
+	}
+
+	/**
+	 * resolve the list components
+	 *
+	 * @param Builder $builder
+	 * @return array
+	 */
 	protected function resolveComponents(Builder $builder)
 	{
 		$sql = [];
@@ -55,7 +107,11 @@ abstract class Resolver implements ResolverInterface
 		return $sql;
 	}
 
-	protected function concatenateColumn($columns)
+	/**
+	 * @param array $columns
+	 * @return string
+	 */
+	protected function concatenateColumn(array $columns)
 	{
 		return implode(', ', $columns);
 	}
@@ -74,10 +130,23 @@ abstract class Resolver implements ResolverInterface
 		return $result;
 	}
 
+	/**
+	 * @param $sql
+	 * @return string
+	 */
 	protected function concatenateSql($sql)
 	{
 		return implode(' ', array_filter($sql, function ($value) {
 			return (string) $value !== '';
 		}));
+	}
+
+	/**
+	 * @param Builder $builder
+	 * @return string
+	 */
+	protected function getTable(Builder $builder)
+	{
+		return $this->tablePrefix . $builder->table;
 	}
 }

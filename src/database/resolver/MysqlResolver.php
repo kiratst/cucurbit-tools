@@ -8,6 +8,59 @@ class MysqlResolver extends Resolver
 {
 
 	/**
+	 * @param Builder $builder
+	 * @return string
+	 */
+	public function resolveDelete(Builder $builder)
+	{
+		$wheres = \is_array($builder->wheres) ? $this->resolveWheres($builder, $builder->wheres) : '';
+
+		return 'delete from ' . $this->getTable($builder) . ' ' . $wheres;
+	}
+
+	/**
+	 * @param Builder $builder
+	 * @param array   $data
+	 * @return string
+	 */
+	public function resolveUpdate(Builder $builder, array $data)
+	{
+		$table = $this->getTable($builder);
+
+		$columns = [];
+		foreach ($data as $key => $value) {
+			$columns[] = $key . '= ? ';
+		}
+
+		$columns = implode(', ', $columns);
+		$wheres  = $this->resolveWheres($builder, $builder->wheres);
+
+		return 'update ' . $table . ' set ' . $columns . ' ' . $wheres;
+	}
+
+	/**
+	 * @param Builder $builder
+	 * @param array   $data
+	 * @return string
+	 */
+	public function resolveInsert(Builder $builder, array $data)
+	{
+
+		$table = $this->getTable($builder);
+
+		$columns = array_keys($data);
+		$values  = array_values($data);
+
+		$columns = $this->concatenateColumn($columns);
+
+		$values = array_map(function ($item) {
+			return '?';
+		}, $values);
+
+		return 'insert into ' . $table . ' (' . $columns . ') values (' . $this->concatenateColumn($values) . ');';
+	}
+
+	/**
 	 * resolve table name
 	 *
 	 * @param Builder $builder
@@ -16,7 +69,7 @@ class MysqlResolver extends Resolver
 	 */
 	protected function resolveTable($builder, $table)
 	{
-		return 'from ' . $this->tablePrefix . $table;
+		return 'from ' . $this->tablePrefix . $builder->table;
 	}
 
 	/**

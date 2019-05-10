@@ -3,7 +3,7 @@
 namespace Cucurbit\Tools\Config;
 
 use ArrayAccess;
-use Cucurbit\Tools\Collection\Collection;
+use Cucurbit\Tools\Support\Collection;
 use Cucurbit\Tools\Common\Traits\ArrayAttributeTrait;
 use Cucurbit\Tools\Config\Interfaces\ConfigInterface;
 

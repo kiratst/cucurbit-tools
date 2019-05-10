@@ -2,8 +2,10 @@
 
 namespace Cucurbit\Tools\Database\Builder;
 
-use Cucurbit\Tools\Collection\Arr;
+use Cucurbit\Tools\Support\Arr;
+use Cucurbit\Tools\Database\Connector\Connector;
 use Cucurbit\Tools\Database\Dao\Dao;
+use Cucurbit\Tools\Database\Resolver\Resolver;
 use Cucurbit\Tools\Database\Traits\WhereTrait;
 use InvalidArgumentException;
 
@@ -18,6 +20,16 @@ class Builder implements BuilderInterface
 	 * @var Dao
 	 */
 	public $dao;
+
+	/**
+	 * @var Connector
+	 */
+	public $connector;
+
+	/**
+	 * @var Resolver
+	 */
+	public $resolver;
 
 	/**
 	 * @var string
@@ -90,7 +102,9 @@ class Builder implements BuilderInterface
 	 */
 	public function __construct($dao)
 	{
-		$this->dao = $dao;
+		$this->dao       = $dao;
+		$this->connector = $this->connector ?: $this->getConnector();
+		$this->resolver  = $this->resolver ?: $this->getResolver();
 	}
 
 	/**
@@ -106,6 +120,9 @@ class Builder implements BuilderInterface
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function distinct()
 	{
 		$this->distinct = true;
@@ -126,6 +143,9 @@ class Builder implements BuilderInterface
 		return $this;
 	}
 
+	/**
+	 * @return $this
+	 */
 	public function groupBy()
 	{
 		$groups = \func_get_args();
@@ -139,6 +159,11 @@ class Builder implements BuilderInterface
 		return $this;
 	}
 
+	/**
+	 * @param string $column
+	 * @param string $direction
+	 * @return $this
+	 */
 	public function orderBy($column, $direction = 'asc')
 	{
 		$this->orders[] = [
@@ -149,36 +174,67 @@ class Builder implements BuilderInterface
 		return $this;
 	}
 
+	/**
+	 * @param $column
+	 * @return Builder
+	 */
 	public function orderByDesc($column)
 	{
 		return $this->orderBy($column, 'desc');
 	}
 
+	/**
+	 * @param array $columns
+	 * @return mixed
+	 */
 	public function get($columns = ['*'])
 	{
 		$this->columns = !$this->columns ? $columns : $this->columns;
 
-		return $this->runSql();
+		return $this->dao->all($this->toSql(), $this->getBindings());
 	}
 
-	public function insert()
+	/**
+	 * @param array $data
+	 * @return mixed|void
+	 */
+	public function insert(array $data)
 	{
-
+		return $this->dao->insert($this->resolver->resolveInsert($this, $data),
+			$this->resolver->prepareBindings($data, $this));
 	}
 
-	public function update()
+	/**
+	 * @param array $data
+	 * @return int|mixed
+	 */
+	public function update(array $data)
 	{
-
+		return $this->dao->update($this->resolver->resolveUpdate($this, $data),
+			$this->resolver->prepareBindings($data, $this)
+		);
 	}
 
-	public function delete()
+	/**
+	 * @param null $id
+	 * @return int|mixed
+	 */
+	public function delete($id = null)
 	{
+		if ($id) {
+			$this->where('id', '=', $id);
+		}
 
+		return $this->dao->delete($this->resolver->resolveDelete($this), $this->getBindings());
 	}
 
+	/**
+	 * @param $limit
+	 * @return $this
+	 */
 	public function limit($limit)
 	{
-		$this->limit = $limit <= 0 ? 1 : $limit;
+		$this->limit = $limit <= 0 ? 1 : (int) $limit;
 
 		return $this;
 	}
@@ -186,7 +242,7 @@ class Builder implements BuilderInterface
 	/**
 	 * get one record by id
 	 *
-	 * @param       $id
+	 * @param mixed $id
 	 * @param array $columns
 	 * @return mixed
 	 */
@@ -196,7 +252,7 @@ class Builder implements BuilderInterface
 	}
 
 	/**
-	 * get first the result
+	 * get the first result
 	 *
 	 * @param array $columns
 	 * @return mixed
@@ -236,14 +292,30 @@ class Builder implements BuilderInterface
 
 	}
 
-	public function toSql()
+	/**
+	 * resolve builder to sql string
+	 *
+	 * @return mixed|string
+	 */
+	protected function toSql()
 	{
-		return $this->dao->getConnector()->getResolver()->toSql($this);
+		return $this->resolver->toSql($this);
 	}
 
-	public function runSql()
+	/**
+	 * @return Connector
+	 */
+	protected function getConnector()
 	{
-		return $this->dao->all($this->toSql(), $this->getBindings());
+		return $this->dao->getConnector();
+	}
+
+	/**
+	 * @return Resolver
+	 */
+	protected function getResolver()
+	{
+		return $this->getConnector()->getResolver();
 	}
 
 	/**
@@ -288,7 +360,7 @@ class Builder implements BuilderInterface
 		return $this;
 	}
 
-	protected function getBindings()
+	public function getBindings()
 	{
 		return Arr::flatten($this->bindings);
 	}

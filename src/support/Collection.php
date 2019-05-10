@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucurbit\Tools\Collection;
+namespace Cucurbit\Tools\Support;
 
 use ArrayAccess;
 use Cucurbit\Tools\Common\Interfaces\Arrayable;

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cucurbit\Tools\Collection;
+namespace Cucurbit\Tools\Support;
 
 use ArrayAccess;
 
@@ -166,5 +166,28 @@ class Arr
 		}
 
 		return $result;
+	}
+
+	/**
+	 * @param array        $array
+	 * @param array|string $excepts
+	 * @return array
+	 */
+	public static function except($array, $excepts)
+	{
+		$excepts = (array) $excepts;
+
+		if (\count($excepts) === 0) {
+			return $array;
+		}
+
+		foreach ($excepts as $except) {
+			if (static::exists($array, $except)) {
+				unset($array[$except]);
+			}
+		}
+
+		dd($array);
+
 	}
 }

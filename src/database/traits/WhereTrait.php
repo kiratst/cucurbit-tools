@@ -3,7 +3,7 @@
 namespace Cucurbit\Tools\Database\Traits;
 
 use Closure;
-use Cucurbit\Tools\Database\Query\Builder;
+use Cucurbit\Tools\Database\Builder\Builder;
 
 /**
  * Trait where conditions
@@ -140,24 +140,24 @@ trait WhereTrait
 	 */
 	protected function nestedWhere(Closure $callback, $expression = 'and')
 	{
-		\call_user_func($callback, $query = $this->newQuery()->table($this->table));
+		$callback($builder = $this->newQuery()->table($this->table));
 
-		return $this->addNestedWhere($query, $expression);
+		return $this->addNestedWhere($builder, $expression);
 	}
 
 	/**
-	 * @param Builder $query
+	 * @param Builder $builder
 	 * @param string  $expression
 	 * @return $this
 	 */
-	protected function addNestedWhere($query, $expression = 'and')
+	protected function addNestedWhere($builder, $expression = 'and')
 	{
-		if (\count($query->wheres)) {
+		if (\count($builder->wheres)) {
 			$type = 'Nested';
 
-			$this->wheres[] = compact('type', 'query', 'expression');
+			$this->wheres[] = compact('type', 'builder', 'expression');
 
-			$this->addBindings($query->bindings);
+			$this->addBindings($builder->bindings);
 		}
 
 		return $this;
