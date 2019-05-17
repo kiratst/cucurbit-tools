@@ -7,13 +7,29 @@ use Cucurbit\Tools\Database\Connector\ConnectionException;
 use Cucurbit\Tools\Database\Connector\ConnectorFactory;
 use Cucurbit\Tools\Database\Dao\Dao;
 
-class Model
+abstract class Model
 {
+	protected static $loaded = [];
+
+	protected $table;
+
+	public function __construct()
+	{
+		$this->loadedIfNot();
+	}
+
+	protected function loadedIfNot()
+	{
+		if (!isset(static::$loaded[static::class])) {
+			static::$loaded[static::class] = true;
+		}
+	}
+
 	/**
 	 * @return Builder
 	 * @throws ConnectionException
 	 */
-	protected function newBuilder()
+	private function newBuilder()
 	{
 		return new Builder($this->getDao());
 	}
@@ -22,7 +38,7 @@ class Model
 	 * @return Dao
 	 * @throws ConnectionException
 	 */
-	protected function getDao()
+	private function getDao()
 	{
 		return new Dao($this->getConnector());
 	}
@@ -31,7 +47,7 @@ class Model
 	 * @return \Cucurbit\Tools\Database\Connector\MysqlConnector|mixed
 	 * @throws ConnectionException
 	 */
-	protected function getConnector()
+	private function getConnector()
 	{
 		try {
 			return ConnectorFactory::make();
